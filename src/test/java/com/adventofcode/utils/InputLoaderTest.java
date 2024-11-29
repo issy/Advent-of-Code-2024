@@ -1,8 +1,8 @@
 package com.adventofcode.utils;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import org.junit.jupiter.api.Test;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 class InputLoaderTest {
 
@@ -19,6 +19,11 @@ class InputLoaderTest {
           4nineeightseven2
           zoneight234
           7pqrstsixteen""");
+  }
+
+  @Test
+  void returnsEmptyForNonexistentFile() {
+    assertThat(InputLoader.loadTestFile("thisfiledoesnotexist.foo")).isEmpty();
   }
 
 }
