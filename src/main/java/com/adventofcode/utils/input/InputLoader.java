@@ -1,4 +1,4 @@
-package com.adventofcode.utils;
+package com.adventofcode.utils.input;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.VisibleForTesting;
