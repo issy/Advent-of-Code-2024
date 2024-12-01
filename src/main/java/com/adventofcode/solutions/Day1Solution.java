@@ -4,8 +4,9 @@ import com.adventofcode.utils.Pair;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.IntStream;
+
+import static java.lang.Math.abs;
 
 public class Day1Solution implements Solution {
 
@@ -18,16 +19,10 @@ public class Day1Solution implements Solution {
   @Override
   public int solvePartOne() {
     Pair<List<Integer>, List<Integer>> twoLists = getLists();
-    List<Integer> leftList = twoLists.first();
-    List<Integer> rightList = twoLists.second();
-    int totalDistance = 0;
-    for (int i = 0; i < leftList.size(); i++) {
-      Integer left = leftList.get(i);
-      Integer right = rightList.get(i);
-      int distance = Math.abs(left - right);
-      totalDistance += distance;
-    }
-    return totalDistance;
+    return IntStream.range(0, twoLists.first().size())
+      .mapToObj(index -> new Pair<>(twoLists.first().get(index), twoLists.second().get(index)))
+      .mapToInt(pair -> abs(pair.first() - pair.second()))
+      .sum();
   }
 
   @Override
@@ -35,16 +30,9 @@ public class Day1Solution implements Solution {
     Pair<List<Integer>, List<Integer>> twoLists = getLists();
     List<Integer> leftList = twoLists.first();
     List<Integer> rightList = twoLists.second();
-    AtomicInteger totalScore = new AtomicInteger();
-    leftList.forEach(left -> {
-      int numAppearances = rightList.stream()
-        .filter(i -> Objects.equals(i, left))
-        .toList()
-        .size();
-      int score = left * numAppearances;
-      totalScore.addAndGet(score);
-    });
-    return totalScore.get();
+    return (int) leftList.stream()
+      .mapToLong(a -> a * rightList.stream().filter(a::equals).count())
+      .sum();
   }
 
   Pair<List<Integer>, List<Integer>> getLists() {
