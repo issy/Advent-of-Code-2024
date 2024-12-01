@@ -22,6 +22,7 @@ class GridTest {
     assertThat(grid.getValueAtPosition(Position.of(0, 0))).isEqualTo('5');
   }
 
+  @Test
   @Disabled("Not implemented yet")
   void canRotateClockwise() {
     // Given
