@@ -1,7 +1,5 @@
 package com.adventofcode.utils.grid;
 
-import java.lang.reflect.Method;
-import java.util.List;
 import java.util.Set;
 
 public record Position(int x, int y) {
