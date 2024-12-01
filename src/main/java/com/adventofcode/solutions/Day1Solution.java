@@ -37,11 +37,11 @@ public class Day1Solution implements Solution {
 
   Pair<List<Integer>, List<Integer>> getLists() {
     final List<Integer> leftList = input.lines()
-      .map(line -> Integer.parseInt(Arrays.stream(line.split(" ")).toList().getFirst()))
+      .map(line -> Integer.parseInt(Arrays.stream(line.split("   ")).toList().getFirst()))
       .sorted()
       .toList();
     final List<Integer> rightList = input.lines()
-      .map(line -> Integer.parseInt(Arrays.stream(line.split(" ")).toList().getLast()))
+      .map(line -> Integer.parseInt(Arrays.stream(line.split("   ")).toList().getLast()))
       .sorted()
       .toList();
     return new Pair<>(leftList, rightList);
