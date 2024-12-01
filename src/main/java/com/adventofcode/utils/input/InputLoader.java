@@ -19,7 +19,7 @@ public class InputLoader {
   }
 
   @VisibleForTesting
-  static Optional<String> loadTestFile(@NotNull String filename) {
+  public static Optional<String> loadTestFile(@NotNull String filename) {
     return fromFilepath(Path.of("src/test/resources", filename));
   }
 

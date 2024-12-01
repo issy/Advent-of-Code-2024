@@ -11,7 +11,7 @@ public class Grid {
   }
 
   public char getValueAtPosition(Position pos) {
-    return rows.get(pos.y()).charAt(pos.x());
+    return rows.reversed().get(pos.y()).charAt(pos.x());
   }
 
   public boolean withinBounds(Position pos) {
@@ -21,10 +21,23 @@ public class Grid {
       && pos.y() >= 0;
   }
 
+  // S X O    X X S
+  // X X X -> X X X
+  // X X X    X X O
+  public Grid rotatedClockwise() {
+    return this;
+  }
+
+  // X X X
+  // - - -
+  // X X X
   private int getRowSize() {
     return rows.getFirst().length();
   }
 
+  // X | X
+  // X | X
+  // X | X
   private int getColSize() {
     return rows.size();
   }
