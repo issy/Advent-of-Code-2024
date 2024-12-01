@@ -18,7 +18,7 @@ public class Day1Solution implements Solution {
 
   @Override
   public int solvePartOne() {
-    Pair<List<Integer>, List<Integer>> twoLists = getLists();
+    final Pair<List<Integer>, List<Integer>> twoLists = getLists();
     return IntStream.range(0, twoLists.first().size())
       .mapToObj(index -> new Pair<>(twoLists.first().get(index), twoLists.second().get(index)))
       .mapToInt(pair -> abs(pair.first() - pair.second()))
@@ -27,9 +27,9 @@ public class Day1Solution implements Solution {
 
   @Override
   public int solvePartTwo() {
-    Pair<List<Integer>, List<Integer>> twoLists = getLists();
-    List<Integer> leftList = twoLists.first();
-    List<Integer> rightList = twoLists.second();
+    final Pair<List<Integer>, List<Integer>> twoLists = getLists();
+    final List<Integer> leftList = twoLists.first();
+    final List<Integer> rightList = twoLists.second();
     return (int) leftList.stream()
       .mapToLong(a -> a * rightList.stream().filter(a::equals).count())
       .sum();
