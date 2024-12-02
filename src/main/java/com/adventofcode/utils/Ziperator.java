@@ -10,8 +10,8 @@ public class Ziperator {
       throw new IllegalArgumentException("Lists must be the same length");
     }
 
-    return new IntStream.range(0, first.size())
-      .mapToObj(i -> new Pair<>(first.get(i), second.get(i)))
+    return IntStream.range(0, first.size())
+      .mapToObj(i -> new Pair<Item, Item>(first.get(i), second.get(i)))
       .toList();
   }
 
