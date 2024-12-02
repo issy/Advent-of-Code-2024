@@ -2,7 +2,6 @@ package com.adventofcode.solutions;
 
 import com.adventofcode.utils.Pair;
 import com.adventofcode.utils.Ziperator;
-import org.checkerframework.checker.units.qual.A;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -10,7 +9,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.IntStream;
 
 import static java.lang.Math.abs;
 
@@ -26,7 +24,8 @@ public class Day2Solution implements Solution {
   public int solvePartOne() {
     return getReports()
       .stream()
-      .filter(Day2Solution::isSafe)
+      .filter(Day2Solution::isInOrder)
+      .filter(r -> Ziperator.zipPreviousItem(r).stream().allMatch(Day2Solution::hasDifferenceWithinSafeRange))
       .toList()
       .size();
   }
@@ -35,8 +34,6 @@ public class Day2Solution implements Solution {
   public int solvePartTwo() {
     return getReports()
       .stream()
-      .filter(r -> Ziperator.zipPreviousItem(r).stream().allMatch(Day2Solution::hasDifferenceWithinSafeRange))
-      .filter(Day2Solution::isOrderedIgnoringOneAnomaly)
       .toList()
       .size();
   }
@@ -56,75 +53,6 @@ public class Day2Solution implements Solution {
     return Ziperator.zipPreviousItem(report)
       .stream()
       .allMatch(Day2Solution::hasDifferenceWithinSafeRange);
-  }
-
-  static List<Integer> getReportIgnoringOneAnomaly(List<Integer> report) {
-    AtomicBoolean hasSeenAnomaly = new AtomicBoolean(false);
-
-    boolean isFalling = Ziperator.zipPreviousItem(report)
-      .stream()
-      .allMatch(p -> {
-        if (p.first() > p.second()) {
-          return true;
-        } else {
-          if (!hasSeenAnomaly.get()) {
-            hasSeenAnomaly.set(true);
-            return true;
-          } else {
-            return false;
-          }
-        }
-      });
-    if (isFalling) {
-      if (hasSeenAnomaly.get()) {
-        return Ziperator.zipPreviousItem(report)
-          .stream()
-          .allMatch(p -> {
-
-          })
-      } else {
-        return report;
-      }
-    }
-  }
-
-  static boolean isOrderedIgnoringOneAnomaly(List<Integer> report) {
-    AtomicBoolean hasSeenAnomaly = new AtomicBoolean(false);
-    boolean isFalling = Ziperator.zipPreviousItem(report)
-      .stream()
-      .allMatch(p -> {
-        if (p.first() > p.second()) {
-          return true;
-        } else {
-          if (!hasSeenAnomaly.get()) {
-            hasSeenAnomaly.set(true);
-            return true;
-          } else {
-            return false;
-          }
-        }
-      });
-    if (isFalling) return true;
-    hasSeenAnomaly.set(false);
-    return Ziperator.zipPreviousItem(report)
-      .stream()
-      .allMatch(p -> {
-        if (p.first() < p.second()) {
-          return true;
-        } else {
-          if (!hasSeenAnomaly.get()) {
-            hasSeenAnomaly.set(true);
-            return true;
-          } else {
-            return false;
-          }
-        }
-      });
-  }
-
-  static boolean isSafePartTwo(List<Integer> report) {
-    if (isSafe(report)) return true;
-    return isOrderedIgnoringOneAnomaly(report) && report.stream().map();
   }
 
   static boolean isInOrder(List<Integer> report) {
