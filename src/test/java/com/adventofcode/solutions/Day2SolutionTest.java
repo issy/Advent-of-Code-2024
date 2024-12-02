@@ -94,19 +94,6 @@ class Day2SolutionTest {
   }
 
   @Test
-  void canDetectAnomalies() {
-    assertThat(Day2Solution.reportOnlyHasMaxOneAnomaly(List.of(1, 2, 3, 4, 5))).isTrue();
-    assertThat(Day2Solution.reportOnlyHasMaxOneAnomaly(List.of(1, 3, 2, 4, 5))).isTrue();
-    assertThat(Day2Solution.reportOnlyHasMaxOneAnomaly(List.of(1, 3, 2, 6, 5))).isFalse();
-  }
-
-  @Test
-  void canMapReportAnomalies() {
-    assertThat(Day2Solution.mapReportWithoutAnomalies(List.of(1, 2, 3, 4, 5))).containsExactly(1, 2, 3, 4, 5);
-    assertThat(Day2Solution.mapReportWithoutAnomalies(List.of(1, 3, 2, 4, 5))).containsExactly(1, 2, 4, 5);
-  }
-
-  @Test
   void partTwoStuff() {
     assertThat(Day2Solution.bruteForceSafeReport(List.of(73, 70, 74, 76, 80)))
         .isEmpty();
