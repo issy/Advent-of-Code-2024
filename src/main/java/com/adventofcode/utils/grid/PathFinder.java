@@ -30,23 +30,21 @@ public class PathFinder {
     Set<List<Position>> completedPaths = new HashSet<>();
     paths.add(List.of(startPosition));
     while (!paths.isEmpty()) {
-      paths.forEach(path -> {
+      final Set<List<Position>> finalPaths = new HashSet<>(paths);
+      finalPaths.forEach(path -> {
         if (path.contains(target)) {
           completedPaths.add(path);
           paths.remove(path);
           return;
         }
         final Position head = path.getLast();
-        Set<Position> nextPositions = head.allPositionsAround()
+        Set<Position> nextPositions = head.allAdjacentPositions()
           .stream()
           .filter(grid::withinBounds)
           .filter(Predicate.not(path::contains))
           .filter(Predicate.not(this::isWallAt))
           .collect(Collectors.toSet());
-        if (nextPositions.isEmpty()) {
-          // Remove dead ends
-          paths.remove(path);
-        } else {
+        if (!nextPositions.isEmpty()) {
           // Add next paths
           nextPositions.forEach(newHead -> {
             final List<Position> newPath = new ArrayList<>(path);
@@ -54,6 +52,7 @@ public class PathFinder {
             paths.add(newPath);
           });
         }
+        paths.remove(path);
       });
     }
     return completedPaths;

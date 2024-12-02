@@ -15,9 +15,9 @@ public class Grid {
   }
 
   public boolean withinBounds(Position pos) {
-    return pos.x() < getColSize()
+    return pos.x() < getRowSize()
       && pos.x() >= 0
-      && pos.y() < getRowSize()
+      && pos.y() < getColSize()
       && pos.y() >= 0;
   }
 

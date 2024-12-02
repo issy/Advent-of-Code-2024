@@ -38,4 +38,21 @@ class GridTest {
     assertThat(newGrid.getValueAtPosition(Position.of(2, 0))).isEqualTo('c');
   }
 
+  @Test
+  void canTestBounds() {
+    Grid grid = new Grid(List.of(
+      "...",
+      "..."
+    ));
+    assertThat(grid.withinBounds(Position.of(0, 0))).isTrue();
+    assertThat(grid.withinBounds(Position.of(1, 1))).isTrue();
+    assertThat(grid.withinBounds(Position.of(2, 1))).isTrue();
+    assertThat(grid.withinBounds(Position.of(2, 3))).isFalse();
+    assertThat(grid.withinBounds(Position.of(0, 3))).isFalse();
+    assertThat(grid.withinBounds(Position.of(3, 0))).isFalse();
+    assertThat(grid.withinBounds(Position.of(0, 1))).isTrue();
+    assertThat(grid.withinBounds(Position.of(0, -1))).isFalse();
+    assertThat(grid.withinBounds(Position.of(-1, 0))).isFalse();
+  }
+
 }
