@@ -4,11 +4,16 @@ import com.adventofcode.utils.Pair;
 import com.adventofcode.utils.Ziperator;
 import com.google.common.collect.Comparators;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.IntStream;
 
 import static java.lang.Math.abs;
 
@@ -23,21 +28,25 @@ public class Day2Solution implements Solution {
   @Override
   public int solvePartOne() {
     return getReports()
-      .stream()
-      .filter(Day2Solution::isInOrder)
-      .filter(r -> Ziperator.zipPreviousItem(r).stream().allMatch(Day2Solution::hasDifferenceWithinSafeRange))
-      .toList()
-      .size();
+        .stream()
+        .filter(Day2Solution::isInOrder)
+        .filter(r -> Ziperator.zipPreviousItem(r).stream()
+            .allMatch(Day2Solution::hasDifferenceWithinSafeRange))
+        .toList()
+        .size();
   }
 
   @Override
   public int solvePartTwo() {
-    return getReports()
-      .stream()
-      .filter(Day2Solution::reportOnlyHasMaxOneAnomaly)
-      .map()
-      .toList()
-      .size();
+    var reports = getReports()
+        .stream()
+        .filter(Day2Solution::reportOnlyHasMaxOneAnomaly)
+        .map(Day2Solution::bruteForceSafeReport)
+        .filter(Optional::isPresent)
+        .map(Optional::get)
+        .filter(r -> Ziperator.zipPreviousItem(r).stream().allMatch(Day2Solution::hasDifferenceWithinSafeRange))
+        .toList();
+    return reports.size();
   }
 
   List<List<Integer>> getReports() {
@@ -46,27 +55,25 @@ public class Day2Solution implements Solution {
 
   static List<Integer> mapLineToReport(String line) {
     return Arrays.stream(line.split(" "))
-      .map(Integer::parseInt)
-      .toList();
+        .map(Integer::parseInt)
+        .toList();
   }
 
-  static boolean isSafe(List<Integer> report) {
-    if (!isInOrder(report)) return false;
-    return Ziperator.zipPreviousItem(report)
-      .stream()
-      .allMatch(Day2Solution::hasDifferenceWithinSafeRange);
+  static boolean allUnique(List<Integer> report) {
+    HashSet<Integer> unique = new HashSet<>(report);
+    return unique.size() == report.size();
   }
 
   static boolean isInOrder(List<Integer> report) {
-    return isAscending(report) || isDescending(report);
+    return allUnique(report) && (isAscending(report) || isDescending(report));
   }
 
   static boolean isAscending(List<Integer> report) {
-    return report.stream().sorted().toList().equals(report);
+    return Comparators.isInOrder(report, Comparator.naturalOrder());
   }
 
   static boolean isDescending(List<Integer> report) {
-    return report.stream().sorted(Comparator.reverseOrder()).toList().equals(report);
+    return Comparators.isInOrder(report, Comparator.reverseOrder());
   }
 
   static boolean hasDifferenceWithinSafeRange(Pair<Integer, Integer> pair) {
@@ -74,22 +81,10 @@ public class Day2Solution implements Solution {
     return diff >= 1 && diff <= 3;
   }
 
-  /**
-   * Ignores max of 1 item not in order
-   */
-  static boolean isInOrderPartTwo(List<Integer> report) {
-    if (isInOrder(report)) return true;
-    // Assuming no numbers appear twice in a report
-    final AtomicInteger runningCompare = new AtomicInteger();
-    Ziperator.zipPreviousItem(report)
-      .forEach(p -> {
-        runningCompare.addAndGet(p.first().compareTo(p.second()));
-      });
-    return abs(runningCompare.get()) == report.size() - 1;
-  }
-
   static boolean reportOnlyHasMaxOneAnomaly(List<Integer> report) {
-    if (isInOrder(report)) return true;
+    if (isInOrder(report)) {
+      return true;
+    }
 
     final AtomicInteger seenAnomaly = new AtomicInteger(0);
     // Rising
@@ -103,10 +98,9 @@ public class Day2Solution implements Solution {
       }
     }
     if (seenAnomaly.get() <= 1) {
-      // Report is rising
-      // TODO: Return the mapped report
-      return false;
+      return true;
     }
+    seenAnomaly.set(0);
     // Falling
     for (Pair<Integer, Integer> pair : Ziperator.zipPreviousItem(report)) {
       if (!(pair.first() > pair.second())) {
@@ -117,14 +111,56 @@ public class Day2Solution implements Solution {
         }
       }
     }
-    // TODO: Do something here
-    // Map report?
-    // It's falling, probably???
-    return true;
+    return seenAnomaly.get() <= 1;
   }
 
   static List<Integer> mapReportWithoutAnomalies(List<Integer> report) {
-    int size = report.size();
+    if (isInOrder(report)) {
+      return report;
+    }
+    final var zipped = Ziperator.zipPreviousItem(report);
+    // Rising?
+    var rising = zipped.stream()
+        .filter(p -> !(p.first() < p.second()))
+        .toList()
+        .size() >= zipped.size() - 1;
+    var falling = zipped.stream()
+        .filter(p -> !(p.first() > p.second()))
+        .toList()
+        .size() >= zipped.size() - 1;
+    List<Integer> result = new ArrayList<>();
+    if (rising) {
+      var filtered = zipped.stream()
+          .filter(p -> p.first() < p.second())
+          .toList();
+      filtered.forEach(p -> result.add(p.first()));
+      result.add(filtered.getLast().second());
+      return result;
+    } else if (falling) {
+      var filtered = zipped.stream()
+          .filter(p -> p.first() > p.second())
+          .toList();
+      filtered.forEach(p -> result.add(p.first()));
+      result.add(filtered.getLast().second());
+      return result;
+    }
+
+    throw new IllegalStateException("Did you forget to filter?");
+  }
+
+  static Optional<List<Integer>> bruteForceSafeReport(List<Integer> report) {
+    if (isInOrder(report)) {
+      return Optional.of(report);
+    }
+    return IntStream.range(0, report.size())
+        .mapToObj(i -> IntStream.range(0, report.size())
+            .filter(x -> x != i)
+            .mapToObj(report::get)
+            .toList()
+        )
+        .filter(Day2Solution::isInOrder)
+        .filter(r -> Ziperator.zipPreviousItem(r).stream().allMatch(Day2Solution::hasDifferenceWithinSafeRange))
+        .findAny();
   }
 
 }

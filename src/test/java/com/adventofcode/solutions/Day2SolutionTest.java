@@ -54,7 +54,6 @@ class Day2SolutionTest {
     assertThat(Day2Solution.isAscending(report)).isFalse();
     assertThat(Day2Solution.isDescending(report)).isTrue();
     assertThat(Day2Solution.isInOrder(report)).isTrue();
-    assertThat(Day2Solution.isSafe(report)).isTrue();
   }
 
   @Test
@@ -92,6 +91,31 @@ class Day2SolutionTest {
         List.of(8, 6, 4, 4, 1),
         List.of(1, 3, 6, 7, 9)
       );
+  }
+
+  @Test
+  void canDetectAnomalies() {
+    assertThat(Day2Solution.reportOnlyHasMaxOneAnomaly(List.of(1, 2, 3, 4, 5))).isTrue();
+    assertThat(Day2Solution.reportOnlyHasMaxOneAnomaly(List.of(1, 3, 2, 4, 5))).isTrue();
+    assertThat(Day2Solution.reportOnlyHasMaxOneAnomaly(List.of(1, 3, 2, 6, 5))).isFalse();
+  }
+
+  @Test
+  void canMapReportAnomalies() {
+    assertThat(Day2Solution.mapReportWithoutAnomalies(List.of(1, 2, 3, 4, 5))).containsExactly(1, 2, 3, 4, 5);
+    assertThat(Day2Solution.mapReportWithoutAnomalies(List.of(1, 3, 2, 4, 5))).containsExactly(1, 2, 4, 5);
+  }
+
+  @Test
+  void partTwoStuff() {
+    assertThat(Day2Solution.bruteForceSafeReport(List.of(73, 70, 74, 76, 80)))
+        .isEmpty();
+    assertThat(Day2Solution.bruteForceSafeReport(List.of(8, 6, 4, 4, 1)))
+        .isPresent()
+        .hasValueSatisfying(report -> assertThat(report)
+            .hasSize(4)
+            .containsExactly(8, 6, 4, 1)
+        );
   }
 
 }
