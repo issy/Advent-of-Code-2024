@@ -2,8 +2,8 @@ package com.adventofcode.solutions;
 
 import com.adventofcode.utils.Pair;
 import com.adventofcode.utils.Ziperator;
+import com.google.common.collect.Comparators;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
@@ -34,6 +34,8 @@ public class Day2Solution implements Solution {
   public int solvePartTwo() {
     return getReports()
       .stream()
+      .filter(Day2Solution::reportOnlyHasMaxOneAnomaly)
+      .map()
       .toList()
       .size();
   }
@@ -86,34 +88,43 @@ public class Day2Solution implements Solution {
     return abs(runningCompare.get()) == report.size() - 1;
   }
 
-  static List<Integer> getReportFallingIgnoring(List<Integer> report) {
-    List<Integer> result = new ArrayList<>();
-    result.add(report.getFirst());
-    final AtomicBoolean hasSeenAnomaly = new AtomicBoolean(false);
-    Ziperator.zipPreviousItem(report)
-      .forEach(p -> {
-        if (!(p.first() > p.second()) && !hasSeenAnomaly.get()) {
-          hasSeenAnomaly.set(true);
+  static boolean reportOnlyHasMaxOneAnomaly(List<Integer> report) {
+    if (isInOrder(report)) return true;
+
+    final AtomicInteger seenAnomaly = new AtomicInteger(0);
+    // Rising
+    for (Pair<Integer, Integer> pair : Ziperator.zipPreviousItem(report)) {
+      if (!(pair.first() < pair.second())) {
+        if (seenAnomaly.get() > 1) {
+          break;
         } else {
-          result.add(p.second());
+          seenAnomaly.addAndGet(1);
         }
-      });
-    return result;
+      }
+    }
+    if (seenAnomaly.get() <= 1) {
+      // Report is rising
+      // TODO: Return the mapped report
+      return false;
+    }
+    // Falling
+    for (Pair<Integer, Integer> pair : Ziperator.zipPreviousItem(report)) {
+      if (!(pair.first() > pair.second())) {
+        if (seenAnomaly.get() > 1) {
+          break;
+        } else {
+          seenAnomaly.addAndGet(1);
+        }
+      }
+    }
+    // TODO: Do something here
+    // Map report?
+    // It's falling, probably???
+    return true;
   }
 
-  static List<Integer> getReportRisingIgnoring(List<Integer> report) {
-    List<Integer> result = new ArrayList<>();
-    result.add(report.getFirst());
-    final AtomicBoolean hasSeenAnomaly = new AtomicBoolean(false);
-    Ziperator.zipPreviousItem(report)
-      .forEach(p -> {
-        if (!(p.first() < p.second()) && !hasSeenAnomaly.get()) {
-          hasSeenAnomaly.set(true);
-        } else {
-          result.add(p.second());
-        }
-      });
-    return result;
+  static List<Integer> mapReportWithoutAnomalies(List<Integer> report) {
+    int size = report.size();
   }
 
 }
