@@ -21,7 +21,7 @@ class Day2SolutionTest {
   void canSolvePartOneWithRealInput() {
     String input = InputLoader.loadTestFile("day2.txt").orElseThrow();
     int result = new Day2Solution(input).solvePartOne();
-    assertThat(result).isEqualTo(0);
+    assertThat(result).isEqualTo(242);
   }
 
   @Test
