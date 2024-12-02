@@ -94,4 +94,9 @@ class Day2SolutionTest {
       );
   }
 
+  @Test
+  void partTwoCanMarkReportsAsSafe() {
+    new Day2Solution("").
+  }
+
 }
