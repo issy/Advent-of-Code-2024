@@ -1,5 +1,6 @@
 package com.adventofcode.solutions;
 
+import com.adventofcode.utils.Pair;
 import com.adventofcode.utils.Ziperator;
 import org.checkerframework.checker.units.qual.A;
 
@@ -52,8 +53,7 @@ public class Day2Solution implements Solution {
     if (!isInOrder(report)) return false;
     return Ziperator.zipPreviousItem(report)
       .stream()
-      .map(p -> abs(p.first() - p.second()))
-      .allMatch(d -> d >= 1 && d <= 3);
+      .allMatch(Day2Solution::hasDifferenceWithinSafeRange);
   }
 
   static boolean isSafePartTwo(List<Integer> report) {
@@ -78,6 +78,11 @@ public class Day2Solution implements Solution {
 
   static boolean isDescending(List<Integer> report) {
     return report.stream().sorted(Comparator.reverseOrder()).toList().equals(report);
+  }
+
+  static boolean hasDifferenceWithinSafeRange(Pair<Integer, Integer> pair) {
+    int diff = abs(pair.first() - pair.second());
+    return diff >= 1 && diff <= 3;
   }
 
   /**
@@ -123,4 +128,5 @@ public class Day2Solution implements Solution {
       });
     return result;
   }
+
 }
